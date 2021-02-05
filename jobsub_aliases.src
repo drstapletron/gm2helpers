@@ -1,0 +1,48 @@
+## source in an interactive shell for js_* convenience commands
+
+[[ -n "${SETUP_JOBSUB_CLIENT}" ]] || {
+  echo "Setting up UPS package jobsub_client (not found setup in environment)"
+  cmd=( setup jobsub_client v1_3 )
+  #echo "command: ${cmd[*]}"
+  eval "${cmd[@]}" || {
+    retval=$?
+    echo "Failed to set up jobsub_client with command"
+    echo "  ${cmd[@]}"
+    echo "...returned ${?}"
+    return $retval
+  }
+}
+echo
+  
+
+# commands from js_client
+# call them jobsub_CMD instead of js_CMD so they can be bypassed
+# without having to unalias (--help for example)
+alias js_fetchlog='jobsub_fetchlog -G gm2 --user ${USER} --jobid '
+alias js_history='jobsub_history -G gm2 --user ${USER}'
+alias js_hold='jobsub_hold -G gm2 --user ${USER}'
+alias js_q='jobsub_q -G gm2 --user ${USER}'
+alias js_probe_url='jobsub_probe_url -G gm2 --user ${USER}'
+alias js_release='jobsub_release -G gm2 --user ${USER} --jobid '
+alias js_rm='jobsub_rm -G gm2 --user ${USER} --jobid '
+alias js_status='jobsub_status -G gm2 --user ${USER}'
+alias js_submit='jobsub_submit -G gm2 --user ${USER}'
+alias js_submit_dag='jobsub_submit_dag -G gm2 --user ${USER}'
+
+
+cat <<EOF
+tips & tricks...
+
+show all held jobs:
+  js_q | grep "H[[:space:]]*0"
+
+show jobs with jobid *.0:
+  js_q | grep "^[[:digit:]]*\.0"
+
+release all held jobs:
+  js_q | grep "H[[:space:]]*0" | while read jobid etc; do js_release \${jobid} || break; done
+
+
+EOF
+
+

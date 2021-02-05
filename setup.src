@@ -1,0 +1,11 @@
+## source in an interactive shell to put these scripts in PATH
+
+setupscript_path="$(cd ${BASH_SOURCE[0]%/*} && echo ${PWD}/${BASH_SOURCE[0]##*/} )"
+gm2helpers_path="$(dirname "${setupscript_path}")"
+
+export PATH="${gm2helpers_path}:${PATH}"
+
+echo "Setup ${gm2helpers_path} in \$PATH:"
+ls -l "${gm2helpers_path}"
+echo
+
