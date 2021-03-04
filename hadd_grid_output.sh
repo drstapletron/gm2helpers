@@ -1,5 +1,7 @@
 #!/bin/bash
 
+Nfilespergroup=50  ##
+
 [[ ! -d hadd ]] || {
   echo -e "found ./hadd!\nfix the previous attempt and then re-run"
   exit 1
@@ -16,8 +18,8 @@ read Nfiles filename < <(wc --lines hadd/allfiles.txt)
 echo "${Nfiles} found in hadd/allfiles.txt"
 
 echo "writing splitfiles_X.root"
-split -d -n l/$(( Nfiles/50 )) --additional-suffix=.txt hadd/allfiles.txt hadd/splitfiles_
-read Nsplitfiles < <(ls hadd/splitfiles_*.txt)
+split -d -n l/$(( Nfiles/Nfilespergroup )) --additional-suffix=.txt hadd/allfiles.txt hadd/splitfiles_
+read Nsplitfiles < <(ls hadd/splitfiles_*.txt | wc --lines)
 
 echo "performing first-level merge..."
 for file in hadd/splitfiles_*.txt
@@ -31,7 +33,7 @@ do {
   }
 }
 done
-read Nrootfiles < <(ls hadd/splitfiles_*.root)
+read Nrootfiles < <(ls hadd/splitfiles_*.root | wc --lines)
 [[ "${Nsplitfiles}" -eq "${Nrootfiles}" ]] || {
   echo "File counts don't match!"
   echo "Nsplitfiles: ${Nsplitfiles}"
